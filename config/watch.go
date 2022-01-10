@@ -35,13 +35,13 @@ func watch(ctx context.Context, conf config.Config, r *root, object ...string) {
 			continue
 		}
 
-		// get root config
+		// get services config
 		node, _ := sonic.Get(v.Bytes(), SERVICES)
 
-		// convert ti raw(string)
+		// convert to raw(string)
 		raw, _ := node.Raw()
 
-		// to byte
+		// unmarshal
 		m := make(map[string]interface{})
 		if err := json.Unmarshal([]byte(raw), &m); err != nil {
 			continue
@@ -71,7 +71,7 @@ func watch(ctx context.Context, conf config.Config, r *root, object ...string) {
 	}
 }
 
-// newMap-
+// newMap -
 func newMap(m interface{}) map[string]string {
 	mux.Lock()
 	defer mux.Unlock()

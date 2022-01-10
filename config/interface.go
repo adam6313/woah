@@ -1,6 +1,8 @@
 package config
 
 import (
+	"context"
+
 	"go-micro.dev/v4/config"
 )
 
@@ -12,8 +14,8 @@ type IConfig interface {
 	// AppName - get this app name
 	AppName() string
 
-	// Service - get service config data
-	Service(string) []byte
+	// Get - get config data
+	Get(...string) []byte
 
 	// Mod - get service mod
 	Mod() string
@@ -23,4 +25,7 @@ type IConfig interface {
 
 	// Close - close connection and watch
 	Close()
+
+	// Watch - object is you want to watch services
+	Watch(ctx context.Context, object ...string) chan Values
 }

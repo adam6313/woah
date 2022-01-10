@@ -4,6 +4,14 @@ const (
 	// appName -
 	appName = "woah"
 
-	// services -
-	services = "services"
+	// CONFIG -
+	CONFIG = "config"
+
+	//  SERVICES -
+	SERVICES = "services"
+)
+
+var (
+	// Cmd -
+	Cmd CMD
 )

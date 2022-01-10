@@ -11,6 +11,7 @@ import (
 	"go-micro.dev/v4/config/reader"
 	"go-micro.dev/v4/config/reader/json"
 	"go-micro.dev/v4/config/source"
+	"go-micro.dev/v4/config/source/memory"
 )
 
 // New - new config and Load
@@ -38,19 +39,22 @@ func New(ctx context.Context) IConfig {
 		log.Fatal(err)
 	}
 
+	// source from memory
+	memorySource := memory.NewSource(
+		memory.WithJSON(Cmd.Raw()),
+	)
+
 	//load source
-	if err := conf.Load(consulSource); err != nil {
+	if err := conf.Load(consulSource, memorySource); err != nil {
 		log.Fatal(err)
 	}
 
 	// scan data
-	r := &root{c: conf}
+	r := &root{c: conf, Ch: make(chan Values)}
+
 	if err := conf.Scan(&r); err != nil {
 		log.Fatal(err)
 	}
-
-	//watch config change
-	go watch(ctx, conf)
 
 	return r
 }

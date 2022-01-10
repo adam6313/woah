@@ -2,18 +2,19 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"woah/config"
+	"woah/service"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )
 
 // serve cmd
 var serveCmd = &cobra.Command{
-	Use:   "serve",
+	Use:   "srv",
 	Short: "s",
 	Run: func(cmd *cobra.Command, args []string) {
 		serve()
@@ -23,10 +24,12 @@ var serveCmd = &cobra.Command{
 func init() {
 	// add serve cmd
 	rootCmd.AddCommand(serveCmd)
+
+	// set Name default is ""
+	serveCmd.Flags().StringVarP(&config.Cmd.Run, "run", "r", "", "service run")
 }
 
 func serve() {
-
 	// di
 	app := fx.New(
 		fx.NopLogger,
@@ -48,11 +51,17 @@ func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig) error {
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
 
-			fmt.Println("@@", string(ic.Mod()))
-			fmt.Println("@@", string(ic.Log()))
-			fmt.Println("@@", string(ic.Log()))
+			go func() {
+				for {
+					v := <-ic.Watch(context.Background())
+					spew.Dump(v.Target)
+				}
+			}()
 
-			fmt.Println(string(ic.Service("user")))
+			// new service
+			service.New(
+				service.WithIC(ic),
+			).Run()
 
 			return nil
 		},

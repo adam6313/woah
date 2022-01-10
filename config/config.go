@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"sync"
 
-	"github.com/davecgh/go-spew/spew"
 	mconfig "go-micro.dev/v4/config"
 )
 
@@ -78,7 +77,6 @@ func (r root) Close() {
 // Watch -
 func (r root) Watch(ctx context.Context, object ...string) chan Values {
 	fn := func() {
-		spew.Dump("123")
 		go watch(ctx, r.c, &r, object...)
 	}
 

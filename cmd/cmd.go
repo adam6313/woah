@@ -5,10 +5,13 @@ import (
 	"log"
 
 	"woah/config"
+	"woah/pkg/broadcast"
+	"woah/pkg/broker"
 	"woah/service"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
+	mb "go-micro.dev/v4/broker"
 	"go.uber.org/fx"
 )
 
@@ -36,6 +39,8 @@ func serve() {
 		fx.Provide(
 			context.Background,
 			config.New,
+			broker.NewMemoryBroker,
+			broadcast.NewTest,
 		),
 		fx.Invoke(handle),
 	)
@@ -47,16 +52,21 @@ func serve() {
 	app.Run()
 }
 
-func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig) error {
+func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig, broadCast broadcast.BroadCast) error {
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
+			broadCast.Subscribe("test", func(e mb.Event) error {
+				spew.Dump(e.Message().Header["target"])
+				return nil
+			})
 
-			go func() {
-				for {
-					v := <-ic.Watch(context.Background())
-					spew.Dump(v.Target)
-				}
-			}()
+			broadCast.OnSubscribe("test", &config.Values{}, func(header map[string]string, in interface{}) error {
+				b, ok := in.(*config.Values)
+				spew.Dump(b, ok)
+				return nil
+			})
+
+			go ic.Watch(context.Background())
 
 			// new service
 			service.New(
@@ -71,6 +81,8 @@ func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig) error {
 
 			//close conf (connect and watch)
 			ic.Close()
+
+			broadCast.CloseAll()
 
 			return nil
 		},

@@ -64,10 +64,8 @@ func watch(ctx context.Context, conf config.Config, r *root, object ...string) {
 		log.Printf("Config change : %v service, value: %v\n", df.Target, deepRaw)
 
 		// send to channel
-		r.Ch <- Values{
-			Target: df.Target,
-			Value:  []byte(raw),
-		}
+		//r.BroadCast.Publish("test", map[string]string{"target": df.Target}, []byte(raw))
+		r.BroadCast.Publish("test", map[string]string{"target": df.Target}, df)
 	}
 }
 
@@ -114,7 +112,6 @@ func diff(old, new map[string]string) *Values {
 				Value:  []byte(m),
 			}
 		}
-
 	}
 
 	return nil
@@ -131,6 +128,6 @@ func allowObject(target string, allow ...string) bool {
 			return true
 		}
 	}
-	return false
 
+	return false
 }

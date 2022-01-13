@@ -4,6 +4,7 @@ package config
 import (
 	"context"
 	"log"
+	"woah/pkg/broadcast"
 
 	"github.com/asim/go-micro/plugins/config/encoder/yaml/v4"
 	"github.com/asim/go-micro/plugins/config/source/consul/v4"
@@ -16,7 +17,7 @@ import (
 
 // New - new config and Load
 // load source and watch config implement
-func New(ctx context.Context) IConfig {
+func New(ctx context.Context, b broadcast.BroadCast) IConfig {
 	// yaml encoder
 	e := yaml.NewEncoder()
 
@@ -50,7 +51,7 @@ func New(ctx context.Context) IConfig {
 	}
 
 	// scan data
-	r := &root{c: conf, Ch: make(chan Values)}
+	r := &root{c: conf, BroadCast: b}
 
 	if err := conf.Scan(&r); err != nil {
 		log.Fatal(err)

@@ -7,7 +7,6 @@ import (
 	"woah/config"
 	"woah/service"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )
@@ -50,13 +49,6 @@ func serve() {
 func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig) error {
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
-
-			go func() {
-				for {
-					v := <-ic.Watch(context.Background())
-					spew.Dump(v.Target)
-				}
-			}()
 
 			// new service
 			service.New(

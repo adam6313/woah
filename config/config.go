@@ -75,13 +75,21 @@ func (r root) Close() {
 }
 
 // Watch -
-func (r root) Watch(ctx context.Context, object ...string) chan Values {
+func (r root) Watcher(ctx context.Context, object ...string) chan Values {
 	fn := func() {
-		go watch(ctx, r.c, &r, object...)
+		go watch(ctx, r.c, &r)
 	}
 
 	// only once run
 	once.Do(fn)
+
+	//ch := make(chan Values)
+
+	//go func(v Values) {
+	//if allowObject(v.Target, object...) {
+	//ch <- v
+	//}
+	//}(<-r.Ch)
 
 	return r.Ch
 }

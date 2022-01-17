@@ -49,13 +49,13 @@ func (o *options) Run() {
 
 func apply(ctx context.Context, opts *options) {
 	// get cmd with root config
-	m, _ := opts.IC.Conf().Map()["cmd"].(map[string]interface{})
+	cmd, _ := opts.IC.Conf().Map()["cmd"].(map[string]interface{})
 
 	// get run script
-	r, ok := m["run"].(string)
+	run, ok := cmd["run"].(string)
 	if !ok {
 		log.Fatal("run script is fatal")
 	}
 
-	go user.Apply(ctx, r, opts.IC)
+	go user.Apply(ctx, run, opts.IC)
 }

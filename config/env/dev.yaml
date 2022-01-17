@@ -1,0 +1,18 @@
+woah:
+  config:
+    mod: "debug"
+    log: "info"
+
+  services:
+    member:
+      mod: "debug"
+      log: "info"
+
+    order:
+      mod: "debug"
+      log: "info"
+
+    user:
+      mod: "debug"
+      log: "info"
+

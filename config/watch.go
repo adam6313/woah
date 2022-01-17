@@ -20,9 +20,11 @@ var (
 	mux sync.Mutex
 )
 
+type watcher struct{}
+
 // watch - watch remote config data
 // handle something when data changes ex: restart service etc.
-func watch(ctx context.Context, conf config.Config, r *root, object ...string) {
+func watch(ctx context.Context, conf config.Config, r *root) {
 	watcher, _ := conf.Watch()
 
 	// new md map
@@ -49,7 +51,7 @@ func watch(ctx context.Context, conf config.Config, r *root, object ...string) {
 
 		// find diff config
 		df := diff(md, newMap(m))
-		if df == nil && allowObject(df.Target, object...) {
+		if df == nil {
 			continue
 		}
 
@@ -64,10 +66,10 @@ func watch(ctx context.Context, conf config.Config, r *root, object ...string) {
 		log.Printf("Config change : %v service, value: %v\n", df.Target, deepRaw)
 
 		// send to channel
-		r.Ch <- Values{
-			Target: df.Target,
-			Value:  []byte(raw),
-		}
+		//r.Ch <- Values{
+		//Target: df.Target,
+		//Value:  []byte(deepRaw),
+		//}
 	}
 }
 
@@ -114,7 +116,6 @@ func diff(old, new map[string]string) *Values {
 				Value:  []byte(m),
 			}
 		}
-
 	}
 
 	return nil

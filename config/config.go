@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"sync"
 
+	"woah/pkg/broadcast"
+
 	mconfig "go-micro.dev/v4/config"
 )
 
@@ -21,10 +23,11 @@ type root struct {
 	// Services - services data
 	Services interface{} `json:"services"`
 
-	// Ch -
-	Ch chan Values `json:"ch"`
+	// BroadCast -
+	BroadCast broadcast.Broadcast
 }
 
+// Values -
 type Values struct {
 	// Target -
 	Target string `json:"target"`
@@ -42,7 +45,7 @@ type Config struct {
 	Log string `json:"log"`
 }
 
-// Environment -
+// CMD -
 type CMD struct {
 	// Run -
 	Run string `json:"run"`
@@ -75,23 +78,13 @@ func (r root) Close() {
 }
 
 // Watch -
-func (r root) Watcher(ctx context.Context, object ...string) chan Values {
+func (r root) Watch(ctx context.Context, object ...string) {
 	fn := func() {
 		go watch(ctx, r.c, &r)
 	}
 
 	// only once run
 	once.Do(fn)
-
-	//ch := make(chan Values)
-
-	//go func(v Values) {
-	//if allowObject(v.Target, object...) {
-	//ch <- v
-	//}
-	//}(<-r.Ch)
-
-	return r.Ch
 }
 
 // Mod -

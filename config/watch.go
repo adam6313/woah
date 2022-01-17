@@ -65,11 +65,8 @@ func watch(ctx context.Context, conf config.Config, r *root) {
 		// print
 		log.Printf("Config change : %v service, value: %v\n", df.Target, deepRaw)
 
-		// send to channel
-		//r.Ch <- Values{
-		//Target: df.Target,
-		//Value:  []byte(deepRaw),
-		//}
+		// broadcast
+		r.BroadCast.Pub(fmt.Sprintf("conf-%s", df.Target), []byte(deepRaw))
 	}
 }
 
@@ -132,6 +129,6 @@ func allowObject(target string, allow ...string) bool {
 			return true
 		}
 	}
-	return false
 
+	return false
 }

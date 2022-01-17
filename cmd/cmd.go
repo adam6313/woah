@@ -5,6 +5,8 @@ import (
 	"log"
 
 	"woah/config"
+	"woah/pkg/broadcast"
+	b "woah/pkg/broadcast"
 	"woah/service"
 
 	"github.com/spf13/cobra"
@@ -34,6 +36,7 @@ func serve() {
 		fx.NopLogger,
 		fx.Provide(
 			context.Background,
+			broadcast.New,
 			config.New,
 		),
 		fx.Invoke(handle),
@@ -46,13 +49,17 @@ func serve() {
 	app.Run()
 }
 
-func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig) error {
+func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig, broadcast b.Broadcast) error {
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
+
+			// watch config
+			ic.Watch(context.Background())
 
 			// new service
 			service.New(
 				service.WithIC(ic),
+				service.WithBroadcase(broadcast),
 			).Run()
 
 			return nil
@@ -61,8 +68,11 @@ func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig) error {
 			// Shutdown fx
 			f.Shutdown()
 
-			//close conf (connect and watch)
+			// close conf (connect and watch)
 			ic.Close()
+
+			// close broadcase
+			broadcast.CloseAll()
 
 			return nil
 		},

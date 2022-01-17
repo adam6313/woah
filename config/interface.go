@@ -27,5 +27,5 @@ type IConfig interface {
 	Close()
 
 	// Watch - object is you want to watch services
-	Watcher(ctx context.Context, object ...string) chan Values
+	Watch(ctx context.Context, object ...string)
 }

@@ -7,7 +7,7 @@ const (
 	// CONFIG -
 	CONFIG = "config"
 
-	//  SERVICES -
+	// SERVICES -
 	SERVICES = "services"
 )
 

@@ -4,13 +4,15 @@ import (
 	"context"
 	"log"
 	"woah/config"
+	b "woah/pkg/broadcast"
 	"woah/service/user"
 )
 
 // options -
 type options struct {
-	ctx context.Context
-	IC  config.IConfig
+	ctx       context.Context
+	IC        config.IConfig
+	broadcast b.Broadcast
 }
 
 // Option -
@@ -20,6 +22,13 @@ type Option func(*options)
 func WithIC(ic config.IConfig) Option {
 	return func(o *options) {
 		o.IC = ic
+	}
+}
+
+// WithBroadcase -
+func WithBroadcase(b b.Broadcast) Option {
+	return func(o *options) {
+		o.broadcast = b
 	}
 }
 
@@ -57,5 +66,5 @@ func apply(ctx context.Context, opts *options) {
 		log.Fatal("run script is fatal")
 	}
 
-	go user.Apply(ctx, run, opts.IC)
+	go user.Apply(ctx, run, opts.IC, opts.broadcast)
 }

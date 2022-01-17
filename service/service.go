@@ -25,8 +25,8 @@ func WithIC(ic config.IConfig) Option {
 	}
 }
 
-// WithBroadcase -
-func WithBroadcase(b b.Broadcast) Option {
+// WithBroadcast -
+func WithBroadcast(b b.Broadcast) Option {
 	return func(o *options) {
 		o.broadcast = b
 	}

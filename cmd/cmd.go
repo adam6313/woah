@@ -59,7 +59,7 @@ func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig, broadcast b.Bro
 			// new service
 			service.New(
 				service.WithIC(ic),
-				service.WithBroadcase(broadcast),
+				service.WithBroadcast(broadcast),
 			).Run()
 
 			return nil
@@ -71,7 +71,7 @@ func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig, broadcast b.Bro
 			// close conf (connect and watch)
 			ic.Close()
 
-			// close broadcase
+			// close broadcast
 			broadcast.CloseAll()
 
 			return nil

@@ -8,9 +8,6 @@ import (
 )
 
 // Handler -
-//type Handler func(map[string]string, interface{}) error
-
-// Handler -
 type Handler interface{}
 
 var emptyType = reflect.TypeOf(&broker.Message{})

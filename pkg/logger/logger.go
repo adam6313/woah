@@ -12,7 +12,7 @@ type LogConf struct {
 	Path string `json:",default=logs"`
 
 	// Level - 級別
-	Level string `json:",default=info,options=info|error|severe"`
+	Level string `json:",default=info,options=info|error"`
 
 	// Compress - 使否開啟 gzip 壓縮
 	Compress bool `json:",optional"`

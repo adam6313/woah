@@ -52,7 +52,6 @@ func serve() {
 func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig, broadcast b.Broadcast) error {
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
-
 			// watch config
 			ic.Watch(context.Background())
 

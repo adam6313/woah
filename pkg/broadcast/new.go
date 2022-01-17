@@ -17,7 +17,7 @@ type broadcast struct {
 }
 
 // New -
-func New(opts ...Option) Broadcast {
+func New() Broadcast {
 	b := &broadcast{
 		mux:            &sync.Mutex{},
 		coder:          json.NewEncoder(),
@@ -27,10 +27,6 @@ func New(opts ...Option) Broadcast {
 
 	// connect (use local memory, so never have error)
 	b.broker.Connect()
-
-	for _, fn := range opts {
-		fn(b)
-	}
 
 	return b
 }

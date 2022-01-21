@@ -3,20 +3,20 @@ package cmd
 import (
 	"context"
 	"log"
-
 	"woah/config"
 	"woah/pkg/broadcast"
-	b "woah/pkg/broadcast"
-	"woah/service"
+	"woah/pkg/logger"
 
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
+	"go.uber.org/zap"
+
+	b "woah/pkg/broadcast"
 )
 
 // serve cmd
-var serveCmd = &cobra.Command{
-	Use:   "srv",
-	Short: "s",
+var serverCmd = &cobra.Command{
+	Use: "server",
 	Run: func(cmd *cobra.Command, args []string) {
 		serve()
 	},
@@ -24,10 +24,10 @@ var serveCmd = &cobra.Command{
 
 func init() {
 	// add serve cmd
-	rootCmd.AddCommand(serveCmd)
+	rootCmd.AddCommand(serverCmd)
 
 	// set Name default is ""
-	serveCmd.Flags().StringVarP(&config.Cmd.Run, "run", "r", "", "service run")
+	serverCmd.Flags().StringVarP(&config.Cmd.Run, "run", "r", "", "service run")
 }
 
 func serve() {
@@ -38,6 +38,7 @@ func serve() {
 			context.Background,
 			broadcast.New,
 			config.New,
+			logger.NewLogger,
 		),
 		fx.Invoke(handle),
 	)
@@ -49,17 +50,18 @@ func serve() {
 	app.Run()
 }
 
-func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig, broadcast b.Broadcast) error {
+func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig, broadcast b.Broadcast, log *zap.Logger) error {
 	lc.Append(fx.Hook{
-		OnStart: func(context.Context) error {
+		OnStart: func(ctx context.Context) error {
 			// watch config
 			ic.Watch(context.Background())
 
 			// new service
-			service.New(
-				service.WithIC(ic),
-				service.WithBroadcast(broadcast),
-			).Run()
+			//service.New(
+			//service.WithIC(ic),
+			//service.WithBroadcast(broadcast),
+			//service.WithLogger(log),
+			//).Run()
 
 			return nil
 		},

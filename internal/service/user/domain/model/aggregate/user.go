@@ -1,4 +1,4 @@
-package user
+package aggregate
 
 // User -
 type User struct {

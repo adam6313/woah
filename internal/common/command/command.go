@@ -16,8 +16,7 @@ type Command interface {
 
 // CommandDescriptor -
 type CommandDescriptor struct {
-	id string
-
+	id      string
 	command interface{}
 }
 

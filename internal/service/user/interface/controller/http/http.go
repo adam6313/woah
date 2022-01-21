@@ -30,7 +30,6 @@ func NewHttpServer(u create.CreateUserUsecase) http.Handler {
 }
 
 func (h HTTPServer) createTest(c iris.Context) {
-
 	aggregateID := uuid.New().String()
 
 	cmd := command.NewCommand(aggregateID, &create.CreateUser{

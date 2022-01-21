@@ -27,21 +27,16 @@ func NewDispatch(args ...interface{}) Dispatch {
 	}
 
 	for _, arg := range args {
+		t := reflect.TypeOf(arg)
 
-		cbType := reflect.TypeOf(arg)
-		//if cbType.Kind() != reflect.Struct {
-		//panic("")
-		//}
+		fmt.Println(t)
+		fmt.Println(t.NumMethod())
+		for i := 0; i < t.NumMethod(); i++ {
+			method := t.Method(i)
+			//numArgs := fnType.NumIn()
+			//fmt.Println(numArgs)
 
-		var oPtr reflect.Value
-		fmt.Println(cbType.Kind())
-		if cbType.Kind() != reflect.Ptr {
-			oPtr = reflect.New(cbType)
-		} else {
-			oPtr = reflect.New(cbType.Elem())
 		}
-
-		fmt.Println(oPtr)
 
 	}
 	//cbType := reflect.TypeOf(arg)

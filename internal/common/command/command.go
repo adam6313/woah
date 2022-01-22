@@ -2,6 +2,12 @@ package command
 
 import "reflect"
 
+// The command is only a request, and thus may be refused.
+// The event is a fact from the past.
+
+// Types -
+type Types Command
+
 // Command -
 type Command interface {
 	// AggregateID -
@@ -10,37 +16,37 @@ type Command interface {
 	// CommandType -
 	Type() (reflect.Type, string)
 
-	// Command -
-	Command() interface{}
+	// Message -
+	Message() interface{}
 }
 
-// CommandDescriptor -
-type CommandDescriptor struct {
+// descriptor -
+type descriptor struct {
 	id      string
-	command interface{}
+	message interface{}
 }
 
-// NewCommand -
-func NewCommand(aggregateID string, command interface{}) Command {
-	return &CommandDescriptor{
+// New -
+func New(aggregateID string, message interface{}) Command {
+	return &descriptor{
 		id:      aggregateID,
-		command: command,
+		message: message,
 	}
 }
 
-// CommandType -
-func (c *CommandDescriptor) Type() (reflect.Type, string) {
-	t := reflect.TypeOf(c.command)
+// Type -
+func (d *descriptor) Type() (reflect.Type, string) {
+	t := reflect.TypeOf(d.message)
 
 	return t, t.Name()
 }
 
 // AggregateID -
-func (c *CommandDescriptor) AggregateID() string {
-	return c.id
+func (d *descriptor) AggregateID() string {
+	return d.id
 }
 
 // Command -
-func (c *CommandDescriptor) Command() interface{} {
-	return c.command
+func (d *descriptor) Message() interface{} {
+	return d.message
 }

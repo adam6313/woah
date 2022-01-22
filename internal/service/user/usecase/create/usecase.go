@@ -7,6 +7,7 @@ import (
 
 // CreateUsecase -
 type createUsecase struct {
+	AggregateID string
 }
 
 // NewUseCase -
@@ -15,19 +16,9 @@ func NewUseCase() CreateUserUsecase {
 }
 
 // Create -
-func (c *createUsecase) Create(ctx context.Context, in *CreateUser) error {
-	fmt.Println("create~~")
-	return nil
+func (c *createUsecase) Create(ctx context.Context, command *CreateUser) (*UserCreated, error) {
+	//aggregateID := ctx.Value("aggregateID").(string)
+
+	fmt.Println("AggregateID", c.AggregateID)
+	return &UserCreated{ID: c.AggregateID}, nil
 }
-
-//Handle -
-//func (c createUsecase) Handle(ctx context.Context, message command.Command) error {
-//switch cmd := message.Command().(type) {
-//case CreateUser:
-//c.Create(ctx, aggregate.User{
-//Name: cmd.Name,
-//})
-//}
-
-//return nil
-//}

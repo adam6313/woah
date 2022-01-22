@@ -7,6 +7,7 @@ import (
 	"woah/config"
 	controller_http "woah/internal/service/user/interface/controller/http"
 	"woah/internal/service/user/usecase/create"
+	"woah/internal/service/user/usecase/update"
 	"woah/pkg/broadcast"
 	"woah/pkg/logger"
 
@@ -46,7 +47,8 @@ func serve() {
 			config.New,
 			logger.NewLogger,
 			create.NewUseCase,
-			controller_http.NewHttpServer,
+			update.NewUseCase,
+			controller_http.NewHTTPServer,
 		),
 		fx.Invoke(handle),
 	)
@@ -73,13 +75,6 @@ func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig, broadcast b.Bro
 			}()
 
 			go h.(*iris.Application).Run(iris.Addr(":3000"))
-
-			// new service
-			//service.New(
-			//service.WithIC(ic),
-			//service.WithBroadcast(broadcast),
-			//service.WithLogger(log),
-			//).Run()
 
 			return nil
 		},

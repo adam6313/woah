@@ -9,6 +9,6 @@ func (t TOPIC) String() string {
 }
 
 const (
-	// EVENT -
+	// EVENT - 過去式
 	EVENT TOPIC = "topic.event"
 )

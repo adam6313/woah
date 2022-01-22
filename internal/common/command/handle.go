@@ -2,105 +2,128 @@ package command
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"reflect"
 )
 
+var (
+	// Ierror - error interface
+	Ierror = reflect.TypeOf((*error)(nil)).Elem()
+)
+
+const (
+	aggregateID = "AggregateID"
+)
+
+// dispatch -
 type dispatch struct {
+	// map key - command
 	m map[reflect.Type]content
 }
+
+// content -
 type content struct {
-	i  interface{}
-	fn reflect.Value
+	imple  reflect.Value
+	method string
 }
 
 // Dispatch -
 type Dispatch interface {
 	// Handle -
-	Handle(ctx context.Context, cmd Command) error
+	Handle(ctx context.Context, cmd Command) (event interface{}, err error)
 }
 
 // NewDispatch -
+// set args to map
+// using command as key
 func NewDispatch(args ...interface{}) Dispatch {
-	d := dispatch{
+	d := &dispatch{
 		m: make(map[reflect.Type]content),
 	}
 
-	for _, arg := range args {
+	for x := 0; x < len(args); x++ {
+		arg := args[x]
 		t := reflect.TypeOf(arg)
+		v := reflect.ValueOf(arg)
 
-		fmt.Println(t)
-		fmt.Println(t.NumMethod())
+		fmt.Println(v.Kind())
+
+		fmt.Println(v.Elem().Kind())
+
 		for i := 0; i < t.NumMethod(); i++ {
 			method := t.Method(i)
-			//numArgs := fnType.NumIn()
-			//fmt.Println(numArgs)
 
+			fnType := method.Func.Type()
+
+			// get args number
+			numArgs := fnType.NumIn()
+
+			argType := fnType.In(numArgs - 1)
+
+			fmt.Println(argType)
+			// set map
+			d.m[argType] = content{
+				imple:  v,
+				method: method.Name,
+			}
 		}
-
 	}
-	//cbType := reflect.TypeOf(arg)
-	//if cbType.Kind() != reflect.Struct {
-	//panic("")
-	//}
-
-	//for i := 0; i < cbType.NumMethod(); i++ {
-	//method := cbType.Method(i)
-
-	//fnType := method.Func.Type()
-
-	//numArgs := fnType.NumIn()
-	//fmt.Println(numArgs)
-
-	//argType := fnType.In(numArgs - 1)
-
-	//fmt.Println(method.Name)
-	//fmt.Println(method)
-	//d.m[argType] = content{
-	//i:  cbType,
-	//fn: method.Func,
-	//}
-	//}
-	//}
 
 	return d
 }
 
 // Handle -
-func (d dispatch) Handle(ctx context.Context, cmd Command) error {
+func (d *dispatch) Handle(ctx context.Context, cmd Command) (event interface{}, err error) {
 	t, _ := cmd.Type()
-	fmt.Println(t)
 
 	v, ok := d.m[t]
 	if !ok {
-		panic("panic")
+		return nil, errors.New("no matching command")
 	}
-	fmt.Println(v.fn)
 
+	setAggregateID(v.imple, aggregateID, cmd.AggregateID())
+
+	// set value
 	oV := []reflect.Value{
-		reflect.ValueOf(v.i).Elem(),
 		reflect.ValueOf(ctx),
-		reflect.ValueOf(cmd),
+		reflect.ValueOf(cmd.Message()),
 	}
 
-	v.fn.Call(oV)
+	// call
+	oValue := v.imple.MethodByName(v.method).Call(oV)
 
-	return nil
+	// process result
+	// find error content and set
+	for _, oV := range oValue {
+		i := oV.Interface()
+
+		switch oV.Type().Implements(Ierror) {
+		case true:
+			err, ok = i.(error)
+			if !ok {
+				err = nil
+			}
+
+		default:
+			event = i
+		}
+	}
+
+	return
 }
 
-//case 3:
-//subV := reflect.ValueOf(m.Subject)
-//replyV := reflect.ValueOf(m.Reply)
-//oV = []reflect.Value{subV, replyV, oPtr}
+func setAggregateID(oV reflect.Value, fieldByName string, aggregateID string) {
+	var ov reflect.Value
 
-//nc, _ := nats.Connect(nats.DefaultURL)
-//c, _ := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-//defer c.Close()
+	switch oV.Kind() {
+	case reflect.Ptr:
+		ov = oV.Elem()
+	}
 
-//// Simple Publisher
-//c.Publish("foo", "Hello World")
+	ov = ov.FieldByName(fieldByName)
 
-//// Simple Async Subscriber
-//c.Subscribe("foo", func(s string) {
-//fmt.Printf("Received a message: %s\n", s)
-//})
+	if ov.IsValid() && ov.CanSet() {
+		ov.SetString(aggregateID)
+	}
+}

@@ -2,6 +2,6 @@ package create
 
 // CreateUser -
 type CreateUser struct {
-	// Name -
+	// 姓名
 	Name string
 }

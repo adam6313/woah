@@ -1,16 +1,14 @@
 package config
 
 import (
-	"context"
+	rc "woah/config"
+	"woah/pkg/encoder/yaml"
 
 	"github.com/tyr-tech-team/hawk/config"
-	"github.com/tyr-tech-team/hawk/config/source"
-	"github.com/tyr-tech-team/hawk/pkg/consul"
-	"github.com/tyr-tech-team/hawk/srv"
 )
 
 // C -
-var C = Config{
+var C = &Config{
 	Info: config.Info{
 		Name: "user",
 	},
@@ -25,23 +23,10 @@ type Config struct {
 	Service config.Service `yaml:"service"`
 }
 
-// NewConsulClient -
-func NewConsulClient(ctx context.Context) consul.Client {
-	cc := consul.DefaultConsulConfig()
-	cc.Address = C.Info.RemoteHost
-	cli := consul.NewClient(ctx, cc)
-	return cli
-}
+func NewServiceConfig(ic rc.IConfig) (*Config, error) {
 
-// RemoteConfig -
-func RemoteConfig(cli consul.Client) (Config, error) {
-	r := config.NewReader(source.NewConsul(cli, C.Info.Name), config.YAML)
-	err := r.ReadWith(&C)
+	encoder := yaml.NewEncoder()
+	err := encoder.Decode(ic.Get("services", C.Info.Name), &C)
 
 	return C, err
-}
-
-// RegisterClient -
-func RegisterClient(cli consul.Client) srv.Register {
-	return cli
 }

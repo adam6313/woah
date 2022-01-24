@@ -6,6 +6,7 @@ require (
 	github.com/asim/go-micro/plugins/config/encoder/yaml/v4 v4.0.0-20211229030140-5fe884e59fcd
 	github.com/asim/go-micro/plugins/config/source/consul/v4 v4.0.0-20211229030140-5fe884e59fcd
 	github.com/bytedance/sonic v1.0.0
+	github.com/davecgh/go-spew v1.1.1
 	github.com/google/uuid v1.2.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/json-iterator/go v1.1.12
@@ -27,7 +28,7 @@ require (
 	github.com/armon/go-metrics v0.3.10 // indirect
 	github.com/aymerick/raymond v2.0.3-0.20180322193309-b565731e1464+incompatible // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
-	github.com/bwmarrin/snowflake v0.3.0 // indirect
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/chenzhuoyu/base64x v0.0.0-20211019084208-fb5309c8db06 // indirect
 	github.com/eknkc/amber v0.0.0-20171010120322-cdade1c07385 // indirect
 	github.com/fatih/color v1.13.0 // indirect

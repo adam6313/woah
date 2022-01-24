@@ -5,6 +5,7 @@ import (
 	"woah/internal/service/user/domain/repository"
 	"woah/internal/service/user/infra/config"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap/ctxzap"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
@@ -23,7 +24,8 @@ type repo struct {
 }
 
 // NewRepository -
-func NewRepository(m *mongo.Client, c config.Config) repository.UserRepository {
+func NewRepository(m *mongo.Client, c *config.Config) repository.UserRepository {
+	spew.Dump(c)
 	return &repo{
 		db:           m,
 		databaseName: c.Mongo.Database,

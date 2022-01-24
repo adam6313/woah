@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"woah/config"
+	service_config "woah/internal/service/user/infra/config"
+	"woah/internal/service/user/infra/persistence/mongo"
+	user_repo "woah/internal/service/user/infra/persistence/mongo/user"
 	controller_http "woah/internal/service/user/interface/controller/http"
 	"woah/internal/service/user/usecase/create"
 	"woah/internal/service/user/usecase/update"
@@ -45,10 +48,13 @@ func serve() {
 			context.Background,
 			broadcast.New,
 			config.New,
+			service_config.NewServiceConfig,
 			logger.NewLogger,
 			create.NewUseCase,
 			update.NewUseCase,
 			controller_http.NewHTTPServer,
+			user_repo.NewRepository,
+			mongo.NewDial,
 		),
 		fx.Invoke(handle),
 	)
@@ -60,7 +66,7 @@ func serve() {
 	app.Run()
 }
 
-func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig, broadcast b.Broadcast, log *zap.Logger, h http.Handler) error {
+func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig, broadcast b.Broadcast, log *zap.Logger, h http.Handler, c *service_config.Config) error {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			// watch config

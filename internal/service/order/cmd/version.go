@@ -1,8 +1,6 @@
 package cmd
 
-import (
-	"github.com/spf13/cobra"
-)
+import "github.com/spf13/cobra"
 
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
@@ -18,7 +16,4 @@ func init() {
 }
 
 func version() {
-	//fmt.Println("Version:", config.C.Info.Version)
-	//fmt.Println("Commit:", config.C.Info.Commit)
-	//fmt.Println("Build:", config.C.Info.Build)
 }

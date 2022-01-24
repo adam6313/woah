@@ -1,7 +1,7 @@
 package main
 
 import (
-	"woah/cmd"
+	"woah/internal/service/user/cmd"
 )
 
 func main() {

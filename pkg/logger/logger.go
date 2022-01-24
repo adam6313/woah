@@ -1,22 +1,14 @@
 package logger
 
-// LogConf -
-type LogConf struct {
-	// ServiceName - 服務名稱
-	ServiceName string `json:",optional"`
+import (
+	"woah/config"
 
-	// Mode - 日志模式(console - 輸出到console, file - 輸出到文件)
-	Mode string `json:",default=console,options=console|file"`
+	"github.com/tyr-tech-team/hawk/log"
+	"go.uber.org/zap"
+)
 
-	// Path - 儲存路徑
-	Path string `json:",default=logs"`
-
-	// Level - 級別
-	Level string `json:",default=info,options=info|error"`
-
-	// Compress - 使否開啟 gzip 壓縮
-	Compress bool `json:",optional"`
-
-	// KeepDays - 保存幾天
-	KeepDays int `json:",optional"`
+// NewLogger -
+// TODO - result logger interface
+func NewLogger(ic config.IConfig) *zap.Logger {
+	return log.NewZapLogger(ic.Log())
 }

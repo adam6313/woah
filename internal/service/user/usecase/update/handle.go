@@ -7,7 +7,7 @@ import (
 
 // updateUsecase  -
 type updateUsecase struct {
-	//AggregateID string
+	AggregateID string
 }
 
 // NewUseCase -

@@ -7,6 +7,7 @@ import (
 	"github.com/tyr-tech-team/hawk/status"
 )
 
+// CheckUserData - 檢查使用者資料
 func (s *userService) CheckUserData(ctx context.Context, user *aggregate.User) error {
 
 	var (
@@ -28,5 +29,17 @@ func (s *userService) CheckUserData(ctx context.Context, user *aggregate.User) e
 		return status.InvalidParameter.WithDetail(errDesc...).Err()
 	}
 
+	return nil
+}
+
+// SetUpdateUser - 設置使用者更新內容
+// origin - 原始資料
+// in - 欲更新的資料
+func (s *userService) SetUpdateUser(ctx context.Context, origin, in *aggregate.User) error {
+
+	// 更新名字
+	if in.Name != "" && in.Name != origin.Name {
+		origin.Name = in.Name
+	}
 	return nil
 }

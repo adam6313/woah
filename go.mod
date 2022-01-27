@@ -30,7 +30,7 @@ require (
 	github.com/armon/go-metrics v0.3.10 // indirect
 	github.com/aymerick/raymond v2.0.3-0.20180322193309-b565731e1464+incompatible // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
-	github.com/bwmarrin/snowflake v0.3.0
+	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20211019084208-fb5309c8db06 // indirect
 	github.com/eknkc/amber v0.0.0-20171010120322-cdade1c07385 // indirect
 	github.com/fatih/color v1.13.0 // indirect

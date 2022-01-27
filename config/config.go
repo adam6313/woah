@@ -7,6 +7,7 @@ import (
 
 	"woah/pkg/broadcast"
 
+	hconf "github.com/tyr-tech-team/hawk/config"
 	mconfig "go-micro.dev/v4/config"
 )
 
@@ -19,6 +20,9 @@ type root struct {
 
 	// Config -
 	Config Config `json:"config"`
+
+	// Mongo -
+	Mongo hconf.Mongo `json:"mongo"`
 
 	// Services - services data
 	Services interface{} `json:"services"`
@@ -95,6 +99,11 @@ func (r root) Mod() string {
 // Log -
 func (r root) Log() string {
 	return r.Config.Log
+}
+
+// MongoConf -
+func (r root) MongoConf() hconf.Mongo {
+	return r.Mongo
 }
 
 // Service - get service config

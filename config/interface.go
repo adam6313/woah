@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"go-micro.dev/v4/config"
+
+	hconf "github.com/tyr-tech-team/hawk/config"
 )
 
 // IConfig - config interface
@@ -22,6 +24,9 @@ type IConfig interface {
 
 	// Log - get log value
 	Log() string
+
+	// MongoConf - get mongo default config
+	MongoConf() hconf.Mongo
 
 	// Close - close connection and watch
 	Close()

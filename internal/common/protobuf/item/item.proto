@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package item;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.gostring_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+
+service ItemService {
+    // Warehouse - 商品入庫
+    rpc Warehouse(WarehouseRequest) returns (Empty);
+    // Shelf - 上下架
+    rpc Shelf(ShelfRequest) returns (Empty);
+    // Purchase - 進貨
+    rpc Purchase(PurchaseRequest) returns (Empty);
+}
+
+// WarehouseRequest - 
+message WarehouseRequest {
+    // 商品名稱
+    string name = 1;
+    // 數量
+    int64 quantity = 2;
+    // 銷售單價
+    int64 sale_price = 3;
+    // 單價成本
+    int64 cost_price = 4;
+}
+
+// ShelfRequest -
+message ShelfRequest {
+    // 商品編號
+    string id = 1;
+    // 狀態
+    uint32 status = 2;
+}
+
+// PurchaseRequest - 
+message PurchaseRequest {
+    // 進貨商品列表
+    repeated PurchaseItem list = 1;
+}
+
+// PurchaseItem -
+message PurchaseItem {
+    // 商品編號
+    string item_id = 1;
+    // 進貨數量
+    int64 quantity = 2;
+}
+
+message Empty {}

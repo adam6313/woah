@@ -2,19 +2,22 @@ package user
 
 import (
 	"woah/internal/common/command"
-	"woah/internal/service/user/interface/controller/http/middle"
-
-	"github.com/kataras/iris/v12"
+	"woah/internal/gateway/woah/middle"
 )
 
-// server -
-type Server struct {
-	App      *iris.Application
+type controller struct {
 	Dispatch command.Dispatch
 }
 
+// NewController -
+func NewController(dispatch command.Dispatch) *controller {
+	return &controller{
+		Dispatch: dispatch,
+	}
+}
+
 // Command -
-func (s *Server) command(cmd command.Command) func(c *middle.C) {
+func (ct *controller) command(cmd command.Command) func(c *middle.C) {
 	return func(c *middle.C) {
 		if err := c.ReadJSON(cmd); err != nil {
 			c.E(err)
@@ -24,7 +27,7 @@ func (s *Server) command(cmd command.Command) func(c *middle.C) {
 		cmd := command.New(cmd.AggregateID(), cmd.Message())
 
 		// dispatch command handle
-		result, err := s.Dispatch.Handle(c.Request().Context(), cmd)
+		result, err := ct.Dispatch.Handle(c.Request().Context(), cmd)
 		if err != nil {
 			c.E(err)
 			return

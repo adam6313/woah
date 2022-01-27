@@ -3,7 +3,6 @@ package command
 import (
 	"context"
 	"errors"
-	"fmt"
 	"reflect"
 )
 
@@ -35,6 +34,9 @@ type content struct {
 type Dispatch interface {
 	// Handle -
 	Handle(ctx context.Context, cmd Command) (event interface{}, err error)
+
+	// Content -
+	Content() map[reflect.Type]content
 }
 
 // NewDispatch -
@@ -73,15 +75,11 @@ func NewDispatch(args ...interface{}) Dispatch {
 
 // Handle -
 func (d *dispatch) Handle(ctx context.Context, cmd Command) (event interface{}, err error) {
-	fmt.Println("Handle 11")
 	t := reflect.TypeOf(cmd.Message())
-	fmt.Println("Handle 22")
 	v, ok := d.m[t]
 	if !ok {
 		return nil, errors.New("no matching command")
 	}
-
-	fmt.Println("Handle 33")
 
 	// set ctx
 	ctx = withAggregateID(ctx, cmd.AggregateID())
@@ -147,4 +145,24 @@ func setAggregateID(oV reflect.Value, fieldByName string, aggregateID string) {
 	if ov.IsValid() && ov.CanSet() {
 		ov.SetString(aggregateID)
 	}
+}
+
+// Merger -
+func Merger(ds ...Dispatch) Dispatch {
+	d := &dispatch{
+		m: make(map[reflect.Type]content),
+	}
+
+	for _, v := range ds {
+		for key, content := range v.Content() {
+			d.m[key] = content
+		}
+	}
+
+	return d
+}
+
+// Content -
+func (d *dispatch) Content() map[reflect.Type]content {
+	return d.m
 }

@@ -1,6 +1,6 @@
 package main
 
-import "woah/internal/service/order/cmd"
+import "woah/internal/gateway/woah/cmd"
 
 func main() {
 	cmd.Execute()

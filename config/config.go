@@ -2,8 +2,8 @@ package config
 
 import (
 	"context"
-	"encoding/json"
 	"sync"
+	"woah/pkg/encoder/json"
 
 	"woah/pkg/broadcast"
 
@@ -49,6 +49,9 @@ type Config struct {
 type CMD struct {
 	// Run -
 	Run string `json:"run"`
+
+	// ConsulAddress -
+	ConsulAddress string `json:"consulAddress"`
 }
 
 // Raw -
@@ -57,7 +60,8 @@ func (e CMD) Raw() []byte {
 		CMD CMD `json:"cmd"`
 	}{CMD: e}
 
-	d, _ := json.Marshal(c)
+	coder := json.NewEncoder()
+	d, _ := coder.Encode(c)
 
 	return d
 }

@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package user;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+
+option (gogoproto.gostring_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+
+service UserService{
+  rpc Execute(google.protobuf.Any) returns (google.protobuf.Any);
+}
+
+// 建立會員
+message CreateUserRequest {
+  string name = 1;
+}
+
+// 建立會員事件
+message CreateUserResponse {
+  string id = 1;
+}

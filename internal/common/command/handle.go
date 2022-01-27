@@ -16,6 +16,9 @@ const (
 	aggregateID = "AggregateID"
 )
 
+// AggregateIDKey -
+type AggregateIDKey struct{}
+
 // dispatch -
 type dispatch struct {
 	// map key - command
@@ -47,10 +50,6 @@ func NewDispatch(args ...interface{}) Dispatch {
 		t := reflect.TypeOf(arg)
 		v := reflect.ValueOf(arg)
 
-		fmt.Println(v.Kind())
-
-		fmt.Println(v.Elem().Kind())
-
 		for i := 0; i < t.NumMethod(); i++ {
 			method := t.Method(i)
 
@@ -61,7 +60,6 @@ func NewDispatch(args ...interface{}) Dispatch {
 
 			argType := fnType.In(numArgs - 1)
 
-			fmt.Println(argType)
 			// set map
 			d.m[argType] = content{
 				imple:  v,
@@ -75,14 +73,18 @@ func NewDispatch(args ...interface{}) Dispatch {
 
 // Handle -
 func (d *dispatch) Handle(ctx context.Context, cmd Command) (event interface{}, err error) {
-	t, _ := cmd.Type()
-
+	fmt.Println("Handle 11")
+	t := reflect.TypeOf(cmd.Message())
+	fmt.Println("Handle 22")
 	v, ok := d.m[t]
 	if !ok {
 		return nil, errors.New("no matching command")
 	}
 
-	setAggregateID(v.imple, aggregateID, cmd.AggregateID())
+	fmt.Println("Handle 33")
+
+	// set ctx
+	ctx = withAggregateID(ctx, cmd.AggregateID())
 
 	// set value
 	oV := []reflect.Value{
@@ -111,6 +113,25 @@ func (d *dispatch) Handle(ctx context.Context, cmd Command) (event interface{}, 
 	}
 
 	return
+}
+
+func withAggregateID(ctx context.Context, aggregateID string) context.Context {
+	return context.WithValue(ctx, AggregateIDKey{}, aggregateID)
+}
+
+// AggregateID -
+func AggregateID(ctx context.Context) string {
+	s := ctx.Value(AggregateIDKey{})
+	if s == nil {
+		return ""
+	}
+
+	v, ok := ctx.Value(AggregateIDKey{}).(string)
+	if !ok {
+		return ""
+	}
+
+	return v
 }
 
 func setAggregateID(oV reflect.Value, fieldByName string, aggregateID string) {

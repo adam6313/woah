@@ -3,11 +3,11 @@ package update
 import (
 	"context"
 	"fmt"
+	"woah/internal/common/command"
 )
 
 // updateUsecase  -
 type updateUsecase struct {
-	//AggregateID string
 }
 
 // NewUseCase -
@@ -17,7 +17,10 @@ func NewUseCase() UpdateUserUsecase {
 
 // Update -
 func (c *updateUsecase) Update(ctx context.Context, in *UpdateUserInfo) error {
-	fmt.Println("AggregateID", c.AggregateID)
+	aggregateID := command.AggregateID(ctx)
+
+	fmt.Println("AggregateID", aggregateID)
+
 	fmt.Println("Update~~", in)
 	return nil
 }

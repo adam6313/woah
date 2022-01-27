@@ -22,6 +22,7 @@ func New(ctx context.Context, b broadcast.Broadcast) IConfig {
 
 	// new consul source
 	consulSource := consul.NewSource(
+		consul.WithAddress(Cmd.ConsulAddress),
 		consul.WithPrefix(appName),
 		consul.StripPrefix(true),
 		source.WithEncoder(e),

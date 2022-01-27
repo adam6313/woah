@@ -1,13 +1,11 @@
 package user
 
 import (
-	"fmt"
 	"woah/internal/common/command"
 	"woah/internal/service/user/interface/controller/http/middle"
 	"woah/internal/service/user/usecase/create"
 	"woah/internal/service/user/usecase/update"
 
-	"github.com/google/uuid"
 	"github.com/kataras/iris/v12"
 )
 
@@ -19,46 +17,23 @@ type Server struct {
 	Dispatch          command.Dispatch
 }
 
-// CreateUser -
-func (s *Server) CreateUser(c *middle.C) {
-	aggregateID := uuid.New().String()
+// Command -
+func (s *Server) command(cmd command.Command) func(c *middle.C) {
+	return func(c *middle.C) {
+		if err := c.ReadJSON(cmd); err != nil {
+			c.E(err)
+		}
 
-	// new command
-	cmd := command.New(aggregateID, &create.CreateUser{
-		Name: "adam",
-	})
+		// new command
+		cmd := command.New(cmd.AggregateID(), cmd.Message())
 
-	// dispatch command handle
-	result, err := s.Dispatch.Handle(c.Request().Context(), cmd)
-	if err != nil {
-		c.E(err)
-		return
+		// dispatch command handle
+		result, err := s.Dispatch.Handle(c.Request().Context(), cmd)
+		if err != nil {
+			c.E(err)
+			return
+		}
+
+		c.R(result)
 	}
-
-	r := result.(*create.UserCreated)
-
-	fmt.Println(r)
-
-	c.R(aggregateID)
-}
-
-// UpdateUser -
-func (s *Server) UpdateUser(c *middle.C) {
-	aggregateID := uuid.New().String()
-
-	// new command
-	cmd := command.New(aggregateID, &update.UpdateUserInfo{
-		Name: "adam",
-	})
-
-	// dispatch command handle
-	_, err := s.Dispatch.Handle(c.Request().Context(), cmd)
-	if err != nil {
-		c.E(err)
-		return
-	}
-
-	//r := result.(*create.UserCreated)
-
-	c.R(aggregateID)
 }

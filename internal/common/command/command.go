@@ -13,9 +13,6 @@ type Command interface {
 	// AggregateID -
 	AggregateID() string
 
-	// CommandType -
-	Type() (reflect.Type, string)
-
 	// Message -
 	Message() interface{}
 }

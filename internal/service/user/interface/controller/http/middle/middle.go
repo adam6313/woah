@@ -17,6 +17,7 @@ func HandleFunc(handler func(*C)) func(iris.Context) {
 		customerContext := &C{
 			c,
 		}
+
 		handler(customerContext)
 	}
 }

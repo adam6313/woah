@@ -4,21 +4,26 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
+	"time"
 	"woah/config"
-	controller_http "woah/internal/service/user/interface/controller/http"
+	grpc_user "woah/internal/service/user/interface/controller/grpc"
+	"woah/internal/service/user/interface/controller/grpc/user"
 	"woah/internal/service/user/usecase/create"
 	"woah/internal/service/user/usecase/update"
 	"woah/pkg/broadcast"
 	"woah/pkg/logger"
 
-	"github.com/kataras/iris/v12"
+	"github.com/gogo/protobuf/types"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 
-	b "woah/pkg/broadcast"
+	"google.golang.org/grpc"
 
-	"net/http"
+	"woah/internal/common/conv/topic"
+	pb "woah/internal/common/protobuf/user"
+	b "woah/pkg/broadcast"
 )
 
 // serve cmd
@@ -35,6 +40,9 @@ func init() {
 
 	// set Name default is ""
 	serverCmd.Flags().StringVarP(&config.Cmd.Run, "run", "r", "", "service run")
+
+	// set consul address
+	serverCmd.Flags().StringVarP(&config.Cmd.ConsulAddress, "consul", "c", "127.0.01:8500", "consul address")
 }
 
 func serve() {
@@ -48,7 +56,9 @@ func serve() {
 			logger.NewLogger,
 			create.NewUseCase,
 			update.NewUseCase,
-			controller_http.NewHTTPServer,
+			user.NewServer,
+			grpc_user.NewGrpcServer,
+			//controller_http.NewHTTPServer,
 		),
 		fx.Invoke(handle),
 	)
@@ -60,7 +70,7 @@ func serve() {
 	app.Run()
 }
 
-func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig, broadcast b.Broadcast, log *zap.Logger, h http.Handler) error {
+func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig, broadcast b.Broadcast, log *zap.Logger, server *grpc.Server) error {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			// watch config
@@ -74,7 +84,33 @@ func handle(lc fx.Lifecycle, f fx.Shutdowner, ic config.IConfig, broadcast b.Bro
 				})
 			}()
 
-			go h.(*iris.Application).Run(iris.Addr(":3000"))
+			ln, _ := net.Listen("tcp", ":3333")
+			go server.Serve(ln)
+
+			log.Sugar().Info("start service on ", ln.Addr().String())
+
+			time.Sleep(1 * time.Second)
+
+			conn, err := grpc.Dial("localhost:3333", grpc.WithInsecure(), grpc.WithBlock())
+			if err != nil {
+				panic(err)
+			}
+
+			defer conn.Close()
+			c := pb.NewUserServiceClient(conn)
+
+			d := pb.CreateUserRequest{
+				Name: "Adam",
+			}
+
+			dd, _ := d.Marshal()
+
+			c.Execute(context.Background(), &types.Any{
+				TypeUrl: topic.EVENT.String(),
+				Value:   dd,
+			})
+
+			//go h.(*iris.Application).Run(iris.Addr(":3000"))
 
 			return nil
 		},

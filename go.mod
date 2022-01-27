@@ -6,7 +6,9 @@ require (
 	github.com/asim/go-micro/plugins/config/encoder/yaml/v4 v4.0.0-20211229030140-5fe884e59fcd
 	github.com/asim/go-micro/plugins/config/source/consul/v4 v4.0.0-20211229030140-5fe884e59fcd
 	github.com/bytedance/sonic v1.0.0
+	github.com/gogo/protobuf v1.3.2
 	github.com/google/uuid v1.2.0
+	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/json-iterator/go v1.1.12
 	github.com/kataras/iris/v12 v12.1.8
 	github.com/spf13/cobra v1.3.0
@@ -78,7 +80,7 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
-	google.golang.org/grpc v1.42.0 // indirect
+	google.golang.org/grpc v1.42.0
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect

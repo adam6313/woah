@@ -3,11 +3,12 @@ package create
 import (
 	"context"
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
 // CreateUsecase -
 type createUsecase struct {
-	AggregateID string
 }
 
 // NewUseCase -
@@ -16,9 +17,11 @@ func NewUseCase() CreateUserUsecase {
 }
 
 // Create -
-func (c *createUsecase) Create(ctx context.Context, command *CreateUser) (*UserCreated, error) {
-	//aggregateID := ctx.Value("aggregateID").(string)
+func (c *createUsecase) Create(ctx context.Context, cmd *CreateUser) (*UserCreated, error) {
+	fmt.Println("Create~~~~~~~")
+	aggregateID := uuid.New().String()
 
-	fmt.Println("AggregateID", c.AggregateID)
-	return &UserCreated{ID: c.AggregateID}, nil
+	fmt.Println(aggregateID)
+
+	return &UserCreated{ID: aggregateID}, nil
 }

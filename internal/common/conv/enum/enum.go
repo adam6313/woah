@@ -1,4 +1,4 @@
-package conv
+package enum
 
 // Gender -
 type Gender uint32

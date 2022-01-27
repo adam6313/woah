@@ -5,11 +5,15 @@ import (
 	"fmt"
 	"log"
 	"woah/config"
+	"woah/internal/service/user/domain/service"
 	service_config "woah/internal/service/user/infra/config"
 	"woah/internal/service/user/infra/persistence/mongo"
 	user_repo "woah/internal/service/user/infra/persistence/mongo/user"
+	"woah/internal/service/user/infra/persistence/redis"
+	"woah/internal/service/user/infra/persistence/redis/memory"
 	controller_http "woah/internal/service/user/interface/controller/http"
 	"woah/internal/service/user/usecase/create"
+	"woah/internal/service/user/usecase/login"
 	"woah/internal/service/user/usecase/update"
 	"woah/pkg/broadcast"
 	"woah/pkg/logger"
@@ -46,15 +50,29 @@ func serve() {
 		fx.NopLogger,
 		fx.Provide(
 			context.Background,
+
+			// infra
 			broadcast.New,
 			config.New,
 			service_config.NewServiceConfig,
 			logger.NewLogger,
+			redis.NewDial,
+			mongo.NewDial,
+
+			// controller
+			controller_http.NewHTTPServer,
+
+			// repo
+			user_repo.NewRepository,
+			memory.NewRepository,
+
+			// service
+			service.NewUserService,
+
+			// usercase
 			create.NewUseCase,
 			update.NewUseCase,
-			controller_http.NewHTTPServer,
-			user_repo.NewRepository,
-			mongo.NewDial,
+			login.NewUseCase,
 		),
 		fx.Invoke(handle),
 	)

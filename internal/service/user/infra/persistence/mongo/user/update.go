@@ -15,7 +15,7 @@ func (r *repo) UpdateUser(ctx context.Context, user *aggregate.User) error {
 
 	// set filter
 	filter := bson.M{
-		"Id": user.ID,
+		"id": user.ID,
 	}
 
 	// set updater

@@ -5,6 +5,7 @@ import (
 	"woah/internal/common/command"
 	"woah/internal/service/user/interface/controller/http/middle"
 	"woah/internal/service/user/usecase/create"
+	"woah/internal/service/user/usecase/login"
 	"woah/internal/service/user/usecase/update"
 
 	"github.com/google/uuid"
@@ -44,11 +45,16 @@ func (s *Server) CreateUser(c *middle.C) {
 
 // UpdateUser -
 func (s *Server) UpdateUser(c *middle.C) {
-	aggregateID := uuid.New().String()
+	aggregateID := c.Params().Get("id")
+
+	data := new(update.UpdateUserInfo)
+	if err := c.ReadJSON(&data); err != nil {
+		return
+	}
 
 	// new command
 	cmd := command.New(aggregateID, &update.UpdateUserInfo{
-		Name: "adam",
+		Name: data.Name,
 	})
 
 	// dispatch command handle
@@ -61,4 +67,32 @@ func (s *Server) UpdateUser(c *middle.C) {
 	//r := result.(*create.UserCreated)
 
 	c.R(aggregateID)
+}
+
+// LoginUser -
+func (s *Server) Login(c *middle.C) {
+	//body, _ := c.GetBody()
+
+	aggregateID := c.Params().Get("id")
+
+	data := new(login.UserLoginCmd)
+
+	if err := c.ReadJSON(data); err != nil {
+		c.E(err)
+		return
+	}
+
+	// new command
+	cmd := command.New(aggregateID, data)
+
+	// dispatch command handle
+	result, err := s.Dispatch.Handle(c.Request().Context(), cmd)
+	if err != nil {
+		c.E(err)
+		return
+	}
+
+	//r := result.(*create.UserCreated)
+
+	c.R(result.(*login.UserLogined))
 }

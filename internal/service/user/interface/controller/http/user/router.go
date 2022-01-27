@@ -12,6 +12,10 @@ func (s *Server) SetRouter() {
 		r.Post("", middle.HandleFunc(s.CreateUser))
 
 		// 更新會員
-		r.Put("", middle.HandleFunc(s.UpdateUser))
+		r.Put("/:id", middle.HandleFunc(s.UpdateUser))
+
+		// 登入
+		r.Post("/login/:id", middle.HandleFunc(s.Login))
+
 	}
 }

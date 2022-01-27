@@ -15,9 +15,10 @@ type createUsecase struct {
 }
 
 // NewUseCase -
-func NewUseCase(userRepo repository.UserRepository) CreateUserUsecase {
+func NewUseCase(userRepo repository.UserRepository, userService service.UserService) CreateUserUsecase {
 	return &createUsecase{
-		userRepo: userRepo,
+		userRepo:    userRepo,
+		userService: userService,
 	}
 }
 

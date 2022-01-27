@@ -14,7 +14,7 @@ func (r *repo) GetUser(ctx context.Context, id string) (*aggregate.User, error) 
 	c := r.db.Database(r.databaseName).Collection(C)
 
 	filter := bson.M{
-		"Id": id,
+		"id": id,
 	}
 
 	cure := c.FindOne(ctx, filter)
